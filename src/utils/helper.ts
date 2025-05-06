@@ -3,12 +3,12 @@ import * as bcrypt from "bcrypt";
 import config from '../config/config';
 
 export class encrypt {
-  static async encryptPassword(password: string) {
-    return await bcrypt.hashSync(password, 12);
+  static encryptPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, 12);
   }
 
-  static async comparePassword(hashPassword: string, password: string) {
-    return await bcrypt.compareSync(password, hashPassword);
+  static comparePassword(plaintext: string, hash: string): Promise<boolean> {
+    return bcrypt.compare(plaintext, hash);
   }
 
   static async generateToken(payload: any) {

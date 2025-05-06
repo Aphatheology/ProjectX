@@ -5,9 +5,9 @@ import Joi from 'joi';
 dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 enum DBTypeEnum {
-  MYSQL       = "mysql",
-  POSTGRES    = "postgres",
-  MSSQL       = "mssql",
+  MYSQL = "mysql",
+  POSTGRES = "postgres",
+  MSSQL = "mssql",
 }
 
 interface EnvVars {

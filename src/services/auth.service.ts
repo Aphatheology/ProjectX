@@ -6,72 +6,34 @@ import { AppDataSource } from "../dataSource";
 import { User } from "../entities/User";
 import { encrypt } from "../utils/helper"
 import moment from 'moment';
+import { LoginDto, RegisterDto } from '../dtos/auth.dto';
+import { Company } from '../entities/Company';
+import CompanyService from './company.service';
+import { UserTypesEnum } from '../dtos/user.types';
+import RoleService from './role.service';
+import { Role } from '../entities/Role';
 
-const userRepository = AppDataSource.getRepository(User);
-
-const isEmailTaken = async (email: string): Promise<boolean> => {
-  const user = await userRepository.findOneBy({ email });
-  return !!user;
-};
-
-export const register =async (userBody: Record<string, any>): Promise<{ user: User; accessToken: string }> => {
-  if (await isEmailTaken(userBody.email)) {
-    throw new ApiError(StatusCodes.BAD_REQUEST, "Email already registered");
-  }
-
-  userBody.password = await encrypt.encryptPassword(userBody.password);
-  
-  let user = await userRepository.create(userBody);
-  user = await userRepository.save(userBody);
-
-  const payload = {
-    id: user.id,
-    email: user.email,
-    iat: moment().unix(),
-    exp: moment().add(config.jwt.accessTokenExpireInMinute, "minutes").unix(),
-  };
-
-  const accessToken = await encrypt.generateToken(payload);
-
-  return { user, accessToken };
-};
-
-export const login = async (userBody: { email: string; password: string }): Promise<{ user: User; accessToken: string }> => {
-  const user = await userRepository.findOneBy({ email: userBody.email });
-
-  if (!user || !(await encrypt.comparePassword(userBody.password, user.password))) {
-    throw new ApiError(StatusCodes.UNAUTHORIZED, 'Incorrect email or password');
-  }
-
-  const payload = {
-    id: user.id,
-    email: user.email,
-    iat: moment().unix(),
-    exp: moment().add(config.jwt.accessTokenExpireInMinute, "minutes").unix(),
-  };
-
-  const accessToken = await encrypt.generateToken(payload);
-
-  return { user, accessToken };
-};
+type SanitizedUser = Omit<User, "password">;
 
 export default class AuthService {
   private userRepository = AppDataSource.getRepository(User);
+  private companyService = new CompanyService();
+  private roleService = new RoleService();
 
   async isEmailTaken(email: string): Promise<boolean> {
     const user = await this.userRepository.findOneBy({ email });
     return !!user;
   };
 
-  async register(userBody: Record<string, any>): Promise<{ user: User; accessToken: string }> {
-    if (await this.isEmailTaken(userBody.email)) {
+  async register(registerDto: RegisterDto): Promise<{ user: SanitizedUser; company?: Company; accessToken: string }> {
+    if (await this.isEmailTaken(registerDto.user.email)) {
       throw new ApiError(StatusCodes.BAD_REQUEST, "Email already registered");
     }
 
-    userBody.password = await encrypt.encryptPassword(userBody.password);
-    
-    let user = await this.userRepository.create(userBody);
-    user = await this.userRepository.save(userBody);
+    registerDto.user.password = await encrypt.encryptPassword(registerDto.user.password);
+
+    let user = await this.userRepository.create(registerDto.user);
+    user = await this.userRepository.save(user);
 
     const payload = {
       id: user.id,
@@ -81,15 +43,30 @@ export default class AuthService {
     };
 
     const accessToken = await encrypt.generateToken(payload);
+    if (registerDto.user.userType == UserTypesEnum.COMPANY) {
+      const company = await this.companyService.createCompany(registerDto.company.name, user.id);
+      return { user, company, accessToken };
+    }
 
-    return { user, accessToken };
+    const { password, ...sanitized } = user;
+    console.log(user, sanitized)
+    return { user: sanitized, accessToken };
   };
 
-  async login(userBody: { email: string; password: string }): Promise<{ user: User; accessToken: string }> {
-    const user = await this.userRepository.findOneBy({ email: userBody.email });
+  async login(userBody: LoginDto): Promise<{ user: SanitizedUser; role?: Role, company?: any, accessToken: string }> {
+    const user = await this.userRepository.findOne( { where: { email: userBody.email }, relations: ['role']});
 
-    if (!user || !(await encrypt.comparePassword(userBody.password, user.password))) {
+    if (!user || !(await encrypt.comparePassword(userBody.password, user!.password))) {
       throw new ApiError(StatusCodes.UNAUTHORIZED, 'Incorrect email or password');
+    }
+
+    let company;
+    const role = user.role ? user.role : undefined;
+
+    if (user.userType === UserTypesEnum.COMPANY) {
+      company = await this.companyService.getCompanyByUserId(user.id);
+    } else if (user.userType === UserTypesEnum.STAFF) {
+      company = user.role ? await this.roleService.getCompanyByRoleId(user.role.id) : undefined;
     }
 
     const payload = {
@@ -101,7 +78,9 @@ export default class AuthService {
 
     const accessToken = await encrypt.generateToken(payload);
 
-    return { user, accessToken };
+    const { password, ...sanitized } = user;
+
+    return { user: sanitized, role, company, accessToken };
   };
 
 }
