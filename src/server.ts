@@ -1,12 +1,12 @@
 import app from './app';
+import { initializeDatabase, closeDatabase } from './config/database';
 import config from './config/config';
 import logger from './config/logger';
-import { AppDataSource } from "./dataSource";
-import "reflect-metadata";
+
 
 const startServer = async () => {
   try {
-    await AppDataSource.initialize();
+    await initializeDatabase();
 
     const server = app.listen(config.port, () => {
       logger.info(`Db connected and app listening on port ${config.port}`);
@@ -14,7 +14,7 @@ const startServer = async () => {
 
     const shutdown = async () => {
       logger.info('Shutting down...');
-      await AppDataSource.destroy();
+      await closeDatabase();
       server.close(() => {
         logger.info('Server closed');
         process.exit(0);

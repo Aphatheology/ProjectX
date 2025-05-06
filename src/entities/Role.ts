@@ -1,33 +1,29 @@
-import {
-  Entity, PrimaryGeneratedColumn, Column, ManyToMany,
-  Index,
-  JoinColumn,
-  ManyToOne
-} from "typeorm";
-import { Permission } from "./Permission";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
+import { User } from './User';
+import { RolePermission } from './RolePermission';
 import { Company } from './Company';
 
-@Entity()
+@Entity('roles')
 export class Role {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ unique: true })
+  @Column({ length: 50 })
   name: string;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ nullable: true })
   description: string;
 
-  @ManyToOne(() => Company, (company) => company.roles, {
-    nullable: true,
-    onDelete: 'SET NULL',
-  })
+  @Column({ name: 'company_id' })
+  companyId: string;
+
+  @ManyToOne(() => Company, company => company.roles)
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @ManyToMany(() => Permission, (perm) => perm.roles)
-  permissions: Permission[];
+  @OneToMany(() => User, user => user.role)
+  users: User[];
 
-  // @OneToMany(() => User, (user) => user.role)
-  // users: User[];
+  @OneToMany(() => RolePermission, rolePermission => rolePermission.role)
+  rolePermissions: RolePermission[];
 }
