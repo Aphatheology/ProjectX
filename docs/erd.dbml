@@ -1,0 +1,45 @@
+Table companies {
+  id uuid [pk]
+  name varchar(100) [not null]
+  owner_id uuid [not null, ref: > users.id]
+}
+
+Table roles {
+  id uuid [pk]
+  name varchar(50) [not null]
+  description text
+  company_id uuid [not null, ref: > companies.id]
+}
+
+Table users {
+  id uuid [pk]
+  full_name varchar(100) [not null]
+  email varchar [unique, not null]
+  password varchar [not null]
+  is_super_admin boolean [default: false]
+  role_id uuid [ref: > roles.id]
+}
+
+Table permissions {
+  id uuid [pk]
+  name varchar [unique, not null]
+  description text
+}
+
+Table role_permissions {
+  id uuid [pk]
+  role_id uuid [not null, ref: > roles.id]
+  permission_id uuid [not null, ref: > permissions.id]
+}
+
+Table inventory_items {
+  id uuid [pk]
+  name varchar [not null]
+  description text
+  price decimal(10,2) [default: 0]
+  quantity int [default: 0]
+  sku varchar [unique, not null]
+  company_id uuid [ref: > companies.id]
+  created_at timestamp
+  updated_at timestamp
+}
