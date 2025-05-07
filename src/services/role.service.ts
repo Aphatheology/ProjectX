@@ -40,6 +40,8 @@ export default class RoleService {
   }
 
   async getPermissionsByRoleId(roleId: string): Promise<Permission[]> {
+    const role = await this.getRoleById(roleId);
+
     const permissions = await this.permissionRepository
       .createQueryBuilder('p')
       .innerJoin('p.rolePermissions', 'rp')

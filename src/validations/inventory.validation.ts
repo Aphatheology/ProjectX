@@ -30,7 +30,7 @@ export const updateInventoryQuantity = {
     id: Joi.string().uuid().required()
   }),
   body: Joi.object().keys({
-    quantityChange: Joi.number().integer().required()
+    quantity: Joi.number().integer().required()
   })
 };
 

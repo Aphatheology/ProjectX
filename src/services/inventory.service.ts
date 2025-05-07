@@ -2,9 +2,12 @@ import { AppDataSource } from '../config/database';
 import { InventoryItem } from '../entities/InventoryItem';
 import { StatusCodes } from "http-status-codes";
 import ApiError from '../utils/apiError';
+import { User } from 'entities/User';
+import UserService from './user.service';
 
 export default class InventoryService {
   private inventoryRepository = AppDataSource.getRepository(InventoryItem);
+  private userService = new UserService();
 
   async getAllInventoryItems(companyId?: string): Promise<InventoryItem[]> {
     const query = this.inventoryRepository.createQueryBuilder("inventory")
@@ -37,7 +40,10 @@ export default class InventoryService {
     });
   }
 
-  async createInventoryItem(inventoryData: Partial<InventoryItem>): Promise<InventoryItem> {
+  async createInventoryItem(currentUserId: string, inventoryData: Partial<InventoryItem>): Promise<InventoryItem> {
+    if (!inventoryData.companyId ) {
+      inventoryData.companyId = (await this.userService.getProfile(currentUserId)).role.companyId;
+    } 
     // Check if SKU is unique
     if (inventoryData.sku) {
       const existingItem = await this.getInventoryItemBySku(inventoryData.sku);
