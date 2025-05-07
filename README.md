@@ -51,7 +51,12 @@ Project X is a SaaS software that helps marketplace enterprises to handle checko
 
 6. Start the server:
    ```
-   yarn start
+   yarn run start
+   ```
+
+7. For development mode with hot-reload:
+   ```
+   yarn run dev
    ```
 
 ## API Documentation
@@ -164,13 +169,7 @@ The system uses the following entities:
 
 - **Users**: Stores user information including authentication details
 - **Companies**: Represents businesses using the system
+- **InventoryItems**: Represents inventory available in the system
 - **Roles**: Defines user roles within a company
 - **Permissions**: Lists available permissions in the system
 - **RolePermissions**: Junction table linking roles to their permissions
-
-## Development
-
-For development mode with hot-reload:
-```
-yarn run dev
-```
