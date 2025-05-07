@@ -8,7 +8,7 @@ import config from './config';
 import logger from './logger';
 
 export const AppDataSource = new DataSource({
-  type: 'postgres',
+  type: config.db.type,
   host: config.db.host,
   port: config.db.port,
   username: config.db.username,
@@ -51,6 +51,9 @@ const seedDefaultPermissions = async () => {
     { name: 'READ_USER', description: 'Can view user details' },
     { name: 'UPDATE_USER', description: 'Can update user details' },
     { name: 'DELETE_USER', description: 'Can delete users' },
+    { name: 'VIEW_ROLE_PERMISSION', description: 'Can delete users' },
+    { name: 'ASSIGN_ROLE_PERMISSION', description: 'Can delete users' },
+    { name: 'DELETE_ROLE_PERMISSION', description: 'Can delete users' },
     { name: 'MANAGE_INVENTORY', description: 'Can manage inventory items' },
     { name: 'PROCESS_CHECKOUT', description: 'Can process customer checkout' },
     { name: 'VIEW_REPORTS', description: 'Can view business reports' },

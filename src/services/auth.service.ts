@@ -27,7 +27,6 @@ export default class AuthService {
     this.rolePermissionRepository = AppDataSource.getRepository(RolePermission);
   }
 
-
   async isEmailTaken(email: string): Promise<boolean> {
     const user = await this.userRepository.findOneBy({ email });
     return !!user;

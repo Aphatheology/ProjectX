@@ -18,6 +18,12 @@ export const getRoleById = catchAsync(async (req: Request, res: Response): Promi
   sendSuccess(res, StatusCodes.OK, 'Role fetched successfully', role);
 });
 
+export const getPermissionsByRoleId = catchAsync(async (req: Request, res: Response): Promise<any> => {
+  const roleId = req.params.id;
+  const permissions = await roleService.getPermissionsByRoleId(roleId);
+  sendSuccess(res, StatusCodes.OK, 'Permissions by RoleId fetched successfully', permissions);
+});
+
 export const createRole = catchAsync(async (req: Request, res: Response): Promise<any> => {
   const roleData = req.body;
   const newRole = await roleService.createRole(roleData);

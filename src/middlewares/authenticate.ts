@@ -32,7 +32,10 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     (req as any).user = decoded;
 
     next();
-  } catch (error) {
+  } catch (error: any) {
+    if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
+      return next(new ApiError(StatusCodes.UNAUTHORIZED, 'Invalid token! Please authenticate'));
+    }
     next(error);
   }
 };
@@ -43,67 +46,49 @@ export const requireSuperAdmin = async (
   next: NextFunction
 ) => {
   try {
-  const userRepository = AppDataSource.getRepository(User);
-      const user = await userRepository.findOneBy({ id: (req as any).user.userId });
-  if (!user || !user.isSuperAdmin) {
-    return next(new ApiError(StatusCodes.FORBIDDEN, 'Forbidden'));
+    const userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository.findOneBy({ id: (req as any).user.userId });
+    if (!user || !user.isSuperAdmin) {
+      return next(new ApiError(StatusCodes.FORBIDDEN, 'Forbidden'));
+    }
+    next();
+  } catch (error) {
+    next(error);
   }
-  next();
-} catch (error) {
-  next(error);
-}
 };
-
-// export const requireSuperAdmin = async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     authenticate(req, res, async () => {
-//       const userRepository = AppDataSource.getRepository(User);
-//       const user = await userRepository.findOneBy({ id: (req as any).user.userId });
-
-//       if (!user || !user.isSuperAdmin) {
-//         throw new ApiError(StatusCodes.FORBIDDEN, "Forbidden");
-//       }
-
-//       next();
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
 
 export const requirePermission = (permissionName: string) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      authenticate(req, res, async () => {
-        const { userId, isSuperAdmin, roleId } = (req as any).user;
 
-        if (isSuperAdmin) {
-          return next();
-        }
+      const { userId, isSuperAdmin, roleId } = (req as any).user;
 
-        if (!roleId) {
-          throw new ApiError(StatusCodes.FORBIDDEN, "Forbidden");
-        }
+      if (isSuperAdmin) {
+        return next();
+      }
 
-        const rolePermissionRepository = AppDataSource.getRepository(RolePermission);
-        const permissionRepository = AppDataSource.getRepository(Permission);
+      if (!roleId) {
+        throw new ApiError(StatusCodes.FORBIDDEN, "Forbidden");
+      }
 
-        const permission = await permissionRepository.findOneBy({ name: permissionName });
-        if (!permission) {
-          throw new ApiError(StatusCodes.FORBIDDEN, "Forbidden");
-        }
+      const rolePermissionRepository = AppDataSource.getRepository(RolePermission);
+      const permissionRepository = AppDataSource.getRepository(Permission);
 
-        const rolePermission = await rolePermissionRepository.findOneBy({
-          roleId,
-          permissionId: permission.id
-        });
+      const permission = await permissionRepository.findOneBy({ name: permissionName });
+      if (!permission) {
+        throw new ApiError(StatusCodes.FORBIDDEN, "Forbidden");
+      }
 
-        if (!rolePermission) {
-          throw new ApiError(StatusCodes.FORBIDDEN, "Forbidden");
-        }
-
-        next();
+      const rolePermission = await rolePermissionRepository.findOneBy({
+        roleId,
+        permissionId: permission.id
       });
+
+      if (!rolePermission) {
+        throw new ApiError(StatusCodes.FORBIDDEN, "Forbidden");
+      }
+
+      next();
     } catch (error) {
       next(error);
     }

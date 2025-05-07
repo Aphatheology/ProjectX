@@ -6,7 +6,7 @@ import { sendSuccess } from '../utils/apiResponse';
 
 const authService = new AuthService();
 
-export const register = catchAsync(async (req: Request, res: Response): Promise<void> => {
+export const registerSuperAdmin = catchAsync(async (req: Request, res: Response): Promise<void> => {
   const user = await authService.registerSuperAdmin(req.body);
   sendSuccess(res, StatusCodes.CREATED, 'SuperAdmin registered successfully', user);
 });

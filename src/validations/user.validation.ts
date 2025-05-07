@@ -1,6 +1,5 @@
 import Joi from 'joi';
 import { password } from '../utils/customValidation';
-import { UserTypesEnum } from '../dtos/user.types';
 
 export const register = {
   body: Joi.object({

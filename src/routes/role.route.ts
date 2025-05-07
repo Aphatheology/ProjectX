@@ -2,7 +2,7 @@ import { Router } from "express";
 import validate from '../middlewares/validate';
 import * as roleValidation from '../validations/role.validation';
 import * as roleController from '../controllers/role.controller';
-import { authenticate, requireSuperAdmin } from '../middlewares/authenticate';
+import { authenticate, requirePermission, requireSuperAdmin } from '../middlewares/authenticate';
 
 const router = Router();
 
@@ -19,10 +19,11 @@ router
 
 router
   .route("/:id/permissions")
-  .post(authenticate, requireSuperAdmin, validate(roleValidation.assignPermissions), roleController.assignPermissions);
+  .get(authenticate, requirePermission('VIEW_ROLE_PERMISSION'), roleController.getPermissionsByRoleId)
+  .post(authenticate, requirePermission('ASSIGN_ROLE_PERMISSION'), validate(roleValidation.assignPermissions), roleController.assignPermissions);
 
 router
   .route("/:id/permissions/:permissionId")
-  .delete(authenticate, requireSuperAdmin, validate(roleValidation.deletePermissionFromRole), roleController.removePermission);
+  .delete(authenticate, requirePermission('DELETE_ROLE_PERMISSION'), validate(roleValidation.deletePermissionFromRole), roleController.removePermission);
 
 export default router;
