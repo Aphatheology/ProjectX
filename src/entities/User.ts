@@ -1,15 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, JoinColumn, ManyToOne, UpdateDateColumn } from "typeorm"
-import { Company } from './Company';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { Role } from './Role';
-import { UserTypesEnum } from '../dtos/user.types';
+import { Company } from './Company';
+import * as bcrypt from 'bcrypt';
 
-@Entity()
+@Entity('users')
 export class User {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @PrimaryGeneratedColumn()
-  id: number
-
-  @Column()
+  @Column({ name: 'full_name', length: 100 })
   fullName: string;
 
   @Column({ unique: true })
@@ -18,29 +17,28 @@ export class User {
   @Column()
   password: string;
 
-  @Column({
-    type: "enum",
-    enum: UserTypesEnum,
-    default: UserTypesEnum.STAFF,
-  })
-  userType: UserTypesEnum;
+  @Column({ name: 'is_super_admin', default: false })
+  isSuperAdmin: boolean;
 
-  @ManyToOne(() => Role)
-  @JoinColumn({ name: "role_id" })
+  @Column({ name: 'role_id', nullable: true })
+  roleId: string;
+
+  @ManyToOne(() => Role, role => role.users, { nullable: true })
+  @JoinColumn({ name: 'role_id' })
   role: Role;
 
-  @ManyToOne(() => Company)
-  @JoinColumn({ name: "company_id" })
-  company: Company;
+  @OneToMany(() => Company, company => company.owner)
+  ownedCompanies: Company[];
 
-  // @ManyToOne(() => Company, (company) => company.users, { nullable: false })
-  // @JoinColumn({ name: "company_id" })
-  // company: Company;
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword() {
+    if (this.password) {
+      this.password = await bcrypt.hash(this.password, 10);
+    }
+  }
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
+  async validatePassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.password);
+  }
 }

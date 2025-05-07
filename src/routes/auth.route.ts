@@ -7,7 +7,7 @@ const router = Router();
 
 router
   .route("/register")
-  .post(validate(userValidation.register), authController.register);
+  .post(validate(userValidation.register), authController.registerSuperAdmin);
 
 router
   .route("/login")

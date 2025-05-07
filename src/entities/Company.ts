@@ -1,32 +1,22 @@
-import {
-  Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany,
-  JoinColumn,
-  ManyToOne
-} from "typeorm";
-import { User } from "./User";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { User } from './User';
 import { Role } from './Role';
 
-@Entity()
+@Entity('companies')
 export class Company {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ unique: true })
+  @Column({ length: 100 })
   name: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
+  @Column({ name: 'owner_id' })
+  ownerId: string;
 
-  @Column({ name: "owner_id" })
-  ownerId: number;
-
-  @ManyToOne(() => User, { nullable: false })
-  @JoinColumn({ name: "owner_id" })
+  @ManyToOne(() => User, user => user.ownedCompanies)
+  @JoinColumn({ name: 'owner_id' })
   owner: User;
 
-  @OneToMany(() => User, (user) => user.company)
-  users: User[];
-
-  @OneToMany(() => Role, (role) => role.company)
+  @OneToMany(() => Role, role => role.company)
   roles: Role[];
 }
