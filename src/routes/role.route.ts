@@ -1,29 +1,28 @@
-// import { Router } from 'express';
-// import { auth } from '../middlewares/auth';
-// import validate from '../middlewares/validate';
-// import * as roleValidation from '../validations/role.validation';
-// import * as roleController from '../controllers/role.controller';
+import { Router } from "express";
+import validate from '../middlewares/validate';
+import * as roleValidation from '../validations/role.validation';
+import * as roleController from '../controllers/role.controller';
+import { authenticate, requireSuperAdmin } from '../middlewares/authenticate';
 
-// const router = Router();
+const router = Router();
 
-// router
-//   .route('/:companyId')
-//   .post(
-//     auth('__all_company_permissions__', '__manage_roles__'),
-//     validate(roleValidation.createRole),
-//     roleController.createRole
-//   )
-//   .get(
-//     auth('__manage_roles__', '__all_company_permissions__'),
-//     validate(roleValidation.getRoles),
-//     roleController.getCompanyRoles
-//   );
+router
+  .route("/")
+  .get(authenticate, requireSuperAdmin, roleController.getAllRoles)
+  .post(authenticate, requireSuperAdmin, validate(roleValidation.createRole), roleController.createRole);
 
-// router.post(
-//   '/permissions/:roleId',
-//   auth('__all_company_permissions__', '__manage_roles__'),
-//   validate(roleValidation.addPermissionsToRole),
-//   roleController.addPermissionsToRole
-// );
+router
+  .route("/:id")
+  .get(authenticate, roleController.getRoleById)
+  .put(authenticate, requireSuperAdmin, validate(roleValidation.updateRole), roleController.updateRole)
+  .delete(authenticate, requireSuperAdmin, validate(roleValidation.deleteRole), roleController.deleteRole);
 
-// export default router;
+router
+  .route("/:id/permissions")
+  .post(authenticate, requireSuperAdmin, validate(roleValidation.assignPermissions), roleController.assignPermissions);
+
+router
+  .route("/:id/permissions/:permissionId")
+  .delete(authenticate, requireSuperAdmin, validate(roleValidation.deletePermissionFromRole), roleController.removePermission);
+
+export default router;

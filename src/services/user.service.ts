@@ -55,7 +55,8 @@ export default class UserService {
       throw new ApiError(StatusCodes.BAD_REQUEST, `Role with id: ${roleId} does not belong to your company`);
     }
 
-    const tempPassword = Math.random().toString(36).slice(-8);
+    // const tempPassword = Math.random().toString(36).slice(-8);
+    const tempPassword = "Password@123";
 
     const user = this.userRepository.create({
       fullName,

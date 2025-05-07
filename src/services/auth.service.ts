@@ -82,34 +82,6 @@ export default class AuthService {
     return { user: savedUser, accessToken };
   }
 
-  // async register(registerDto: RegisterDto): Promise<{ user: SanitizedUser; company?: Company; accessToken: string }> {
-  //   if (await this.isEmailTaken(registerDto.user.email)) {
-  //     throw new ApiError(StatusCodes.BAD_REQUEST, "Email already registered");
-  //   }
-
-  //   registerDto.user.password = await encrypt.encryptPassword(registerDto.user.password);
-
-  //   let user = await this.userRepository.create(registerDto.user);
-  //   user = await this.userRepository.save(user);
-
-  //   const payload = {
-  //     id: user.id,
-  //     email: user.email,
-  //     iat: moment().unix(),
-  //     exp: moment().add(config.jwt.accessTokenExpireInMinute, "minutes").unix(),
-  //   };
-
-  //   const accessToken = await encrypt.generateToken(payload);
-  //   if (registerDto.user.userType == UserTypesEnum.COMPANY) {
-  //     const company = await this.companyService.createCompany(registerDto.company.name, user.id);
-  //     return { user, company, accessToken };
-  //   }
-
-  //   const { password, ...sanitized } = user;
-  //   console.log(user, sanitized)
-  //   return { user: sanitized, accessToken };
-  // };
-
   async login(loginDto: LoginDto): Promise<{ user: SanitizedUser; accessToken: string }> {
     const { email, password } = loginDto;
 

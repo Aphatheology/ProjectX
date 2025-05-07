@@ -22,5 +22,6 @@ export const createUser = {
   body: Joi.object({
       email: Joi.string().required().email(),
       fullName: Joi.string().required(),
+      roleId: Joi.string().uuid().required(),
     }),
 };

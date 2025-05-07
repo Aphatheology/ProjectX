@@ -37,22 +37,39 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
   }
 };
 
-export const requireSuperAdmin = async (req: Request, res: Response, next: NextFunction) => {
+export const requireSuperAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    authenticate(req, res, async () => {
-      const userRepository = AppDataSource.getRepository(User);
+  const userRepository = AppDataSource.getRepository(User);
       const user = await userRepository.findOneBy({ id: (req as any).user.userId });
-
-      if (!user || !user.isSuperAdmin) {
-        throw new ApiError(StatusCodes.FORBIDDEN, "Forbidden");
-      }
-
-      next();
-    });
-  } catch (error) {
-    next(error);
+  if (!user || !user.isSuperAdmin) {
+    return next(new ApiError(StatusCodes.FORBIDDEN, 'Forbidden'));
   }
+  next();
+} catch (error) {
+  next(error);
+}
 };
+
+// export const requireSuperAdmin = async (req: Request, res: Response, next: NextFunction) => {
+//   try {
+//     authenticate(req, res, async () => {
+//       const userRepository = AppDataSource.getRepository(User);
+//       const user = await userRepository.findOneBy({ id: (req as any).user.userId });
+
+//       if (!user || !user.isSuperAdmin) {
+//         throw new ApiError(StatusCodes.FORBIDDEN, "Forbidden");
+//       }
+
+//       next();
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 export const requirePermission = (permissionName: string) => {
   return async (req: Request, res: Response, next: NextFunction) => {

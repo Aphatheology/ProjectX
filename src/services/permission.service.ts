@@ -1,50 +1,61 @@
-// import { Repository } from 'typeorm';
-// import { AppDataSource } from '../dataSource';
-// import { Permission } from '../entities/Permission';
-// import ApiError from '../utils/apiError';
-// import httpStatus from 'http-status';
-// import { CreatePermissionDto } from '../dtos/permission.dto';
+import { AppDataSource } from '../config/database';
+import { Permission } from '../entities/Permission';
+import { StatusCodes } from 'http-status-codes';
+import ApiError from '../utils/apiError';
 
-// export default class PermissionService {
-//   private permissionRepository: Repository<Permission>;
+export default class PermissionService {
+  private permissionRepository = AppDataSource.getRepository(Permission);
 
-//   constructor() {
-//     this.permissionRepository = AppDataSource.getRepository(Permission);
-//   }
+  async getAllPermissions(): Promise<Permission[]> {
+    return this.permissionRepository.find();
+  }
 
-//   async createPermission(createPermissionDto: CreatePermissionDto) {
-//     const { name, description } = createPermissionDto;
-//     if (await this.permissionRepository.findOneBy({ name })) {
-//       throw new ApiError(httpStatus.BAD_REQUEST, 'Permission name is already taken');
-//     }
-//     const permission = this.permissionRepository.create({ name, description });
-//     return this.permissionRepository.save(permission);
-//   }
+  async getPermissionById(id: string): Promise<Permission> {
+    const permission = await this.permissionRepository.findOne({
+      where: { id },
+      relations: ['roles']
+    });
 
-//   async getPermissionByNameExternal(name: string) {
-//     const permission = await this.permissionRepository.findOneBy({ name });
-//     return permission;
-//   }
+    if (!permission) {
+      throw new ApiError(StatusCodes.NOT_FOUND, 'Permission not found');
+    }
 
-//   async getPermissionByName(name: string) {
-//     const permission = await this.permissionRepository.findOneBy({ name });
-//     if (!permission) throw new ApiError(httpStatus.NOT_FOUND, 'Permission not found');
-//     return permission;
-//   }
+    return permission;
+  }
 
-//   async getPermissionById(id: number) {
-//     const permission = await this.permissionRepository.findOneBy({ id });
-//     if (!permission) throw new ApiError(httpStatus.NOT_FOUND, 'Permission not found');
-//     return permission;
-//   }
+  async createPermission(permissionData: Partial<Permission>): Promise<Permission> {
+    const existingPermission = await this.permissionRepository.findOne({
+      where: { name: permissionData.name }
+    });
 
-//   async listPermissions() {
-//     return this.permissionRepository.find({ select: ['id', 'name', 'description'] });
-//   }
+    if (existingPermission) {
+      throw new ApiError(StatusCodes.CONFLICT, 'Permission with this name already exists');
+    }
 
-//   async deletePermission(id: number) {
-//     const permission = await this.getPermissionById(id);
-//     await this.permissionRepository.remove(permission);
-//     return permission;
-//   }
-// }
+    const newPermission = this.permissionRepository.create(permissionData);
+    return this.permissionRepository.save(newPermission);
+  }
+
+  async updatePermission(id: string, permissionData: Partial<Permission>): Promise<Permission> {
+    const permission = await this.getPermissionById(id);
+
+    // Check if the permission name is being updated and if it already exists
+    if (permissionData.name && permissionData.name !== permission.name) {
+      const existingPermission = await this.permissionRepository.findOne({
+        where: { name: permissionData.name }
+      });
+
+      if (existingPermission) {
+        throw new ApiError(StatusCodes.CONFLICT, 'Permission with this name already exists');
+      }
+    }
+
+    Object.assign(permission, permissionData);
+    return this.permissionRepository.save(permission);
+  }
+
+  async deletePermission(id: string): Promise<void> {
+    const permission = await this.getPermissionById(id);
+    await this.permissionRepository.remove(permission);
+  }
+}

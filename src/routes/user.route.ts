@@ -10,6 +10,6 @@ const router = Router();
 router
   .route("/")
   .get(authenticate, userController.getProfile)
-  .post(authenticate, requireSuperAdmin, validate(userValidation.createUser),userController.createUser);
+  .post(authenticate, requireSuperAdmin, validate(userValidation.createUser), userController.createUser);
 
 export default router;

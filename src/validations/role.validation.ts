@@ -1,31 +1,40 @@
-import Joi, { number } from 'joi';
+import Joi from 'joi';
 
 export const createRole = {
   body: Joi.object().keys({
     name: Joi.string().required(),
-    description: Joi.string(),
-    permissionIds: Joi.array()
-      .items(Joi.number().integer().required())
-      .required(),
-  }),
-  params: Joi.object().keys({
-    companyId: Joi.number().integer().required(),
-  }),
+    description: Joi.string().optional(),
+    companyId: Joi.string().uuid().optional(),
+  })
 };
 
-export const getRoles = {
+export const updateRole = {
   params: Joi.object().keys({
-    companyId: Joi.number().integer().required(),
-  }),
-};
-
-export const addPermissionsToRole = {
-  params: Joi.object().keys({
-    roleId: Joi.number().integer().required(),
+    id: Joi.string().uuid().required()
   }),
   body: Joi.object().keys({
-    permissionIds: Joi.array()
-      .items(Joi.number().integer().required())
-      .required(),
+    name: Joi.string().optional(),
+    description: Joi.string().optional(),
+  })
+};
+
+export const assignPermissions = {
+  params: Joi.object().keys({
+    id: Joi.string().uuid().required()
   }),
+  body: Joi.object().keys({
+    permissionIds: Joi.array().items(Joi.string().uuid()).required()
+  })
+};
+
+export const deleteRole = {
+  params: Joi.object().keys({
+    id: Joi.string().uuid().required()
+  })
+};
+
+export const deletePermissionFromRole = {
+  params: Joi.object().keys({
+    id: Joi.string().uuid().required()
+  })
 };
