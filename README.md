@@ -18,11 +18,29 @@ Project X is a SaaS software that helps marketplace enterprises to handle checko
 - **Input Validation**: Joi
 - **Password Encryption**: bcrypt
 
+
+## Database Schema
+
+The system uses the following entities:
+
+- **Users**: Stores user information including authentication details
+- **Companies**: Represents businesses using the system
+- **InventoryItems**: Represents inventory available in the system
+- **Roles**: Defines user roles within a company
+- **Permissions**: Lists available permissions in the system
+- **RolePermissions**: Junction table linking roles to their permissions
+
+## ERD
+
+![ProjectX ERD](docs/images/ProjectX_ERD.png)
+
+
 ## Prerequisites
 
 - Node.js (v16 or later)
 - PostgreSQL (v14 or later)
 - npm or yarn
+
 
 ## Installation
 
@@ -39,7 +57,7 @@ Project X is a SaaS software that helps marketplace enterprises to handle checko
 
 3. Create a `.env` file based on `.env.example` and update the values:
    ```
-   cp .env.example .env
+   cp .envExample .env
    ```
 
 4. Create a PostgreSQL database named `project_x`
@@ -59,7 +77,12 @@ Project X is a SaaS software that helps marketplace enterprises to handle checko
    yarn run dev
    ```
 
+
 ## API Documentation
+
+For full details on endpoints, request/response schemas, and examples, view our Postman collection:
+
+🔗 [Postman API Docs](https://documenter.getpostman.com/view/13406320/2sB2j7eVRn)
 
 ### Authentication Endpoints
 
@@ -162,14 +185,3 @@ Login endpoint for all user types.
   "accessToken": "jwt-token"
 }
 ```
-
-## Database Schema
-
-The system uses the following entities:
-
-- **Users**: Stores user information including authentication details
-- **Companies**: Represents businesses using the system
-- **InventoryItems**: Represents inventory available in the system
-- **Roles**: Defines user roles within a company
-- **Permissions**: Lists available permissions in the system
-- **RolePermissions**: Junction table linking roles to their permissions
