@@ -34,7 +34,7 @@ Project X is a SaaS software that helps marketplace enterprises to handle checko
 
 2. Install dependencies:
    ```
-   npm install
+   yarn install
    ```
 
 3. Create a `.env` file based on `.env.example` and update the values:
@@ -46,12 +46,12 @@ Project X is a SaaS software that helps marketplace enterprises to handle checko
 
 5. Build the application:
    ```
-   npm run build
+   yarn run build
    ```
 
 6. Start the server:
    ```
-   npm start
+   yarn start
    ```
 
 ## API Documentation
@@ -61,7 +61,7 @@ Project X is a SaaS software that helps marketplace enterprises to handle checko
 #### Register Super Admin
 
 ```
-POST /api/auth/register
+POST /v1/api/auth/register
 ```
 
 Register a new super admin (business owner) with the capability to manage the entire system.
@@ -86,14 +86,15 @@ Register a new super admin (business owner) with the capability to manage the en
     "email": "john.doe@example.com",
     "isSuperAdmin": true,
     "roleId": "uuid"
-  }
+  },
+  "accessToken": "jwt-token"
 }
 ```
 
 #### Create User (by Super Admin)
 
 ```
-POST /api/auth/users
+POST /v1/api/auth/users
 ```
 
 Super admin can create new users and assign them to roles.
@@ -129,7 +130,7 @@ Authorization: Bearer <jwt_token>
 #### Login
 
 ```
-POST /api/auth/login
+POST /v1/api/auth/login
 ```
 
 Login endpoint for all user types.
@@ -153,7 +154,7 @@ Login endpoint for all user types.
     "isSuperAdmin": false,
     "roleId": "uuid-of-role"
   },
-  "token": "jwt-token"
+  "accessToken": "jwt-token"
 }
 ```
 
@@ -171,16 +172,5 @@ The system uses the following entities:
 
 For development mode with hot-reload:
 ```
-npm run dev
+yarn run dev
 ```
-
-## Testing
-
-Run tests with:
-```
-npm test
-```
-
-## License
-
-This project is licensed under the ISC License.
