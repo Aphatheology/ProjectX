@@ -15,7 +15,7 @@ export const AppDataSource = new DataSource({
   username: config.db.username,
   password: config.db.password,
   database: config.db.name,
-  synchronize: config.env !== 'production',
+  synchronize: false,
   logging: config.env !== 'production',
   entities: [User, Role, Permission, RolePermission, Company, InventoryItem],
   migrations: [],
@@ -25,9 +25,9 @@ export const AppDataSource = new DataSource({
 export const initializeDatabase = async () => {
   try {
     await AppDataSource.initialize();
-    logger.info('Database connection initialized');
 
     await seedDefaultPermissions();
+    logger.info('Database connection initialized and seeded successfully');
   } catch (error) {
     logger.error('Error initializing database connection:', error);
     throw error;
