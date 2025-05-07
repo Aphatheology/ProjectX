@@ -18,13 +18,15 @@ export const AppDataSource = new DataSource({
   synchronize: false,
   logging: config.env !== 'production',
   entities: [User, Role, Permission, RolePermission, Company, InventoryItem],
-  migrations: [],
+  migrations: ["dist/migrations/*.js"],
   subscribers: [],
 });
 
 export const initializeDatabase = async () => {
   try {
     await AppDataSource.initialize();
+
+    await AppDataSource.runMigrations();
 
     await seedDefaultPermissions();
     logger.info('Database connection initialized and seeded successfully');

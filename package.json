@@ -21,7 +21,13 @@
     "dev": "cross-env NODE_ENV=development tsc-watch --onSuccess \"node ./dist/server.js\"",
     "prod": "cross-env NODE_ENV=production tsc && node ./dist/server.js",
     "build": "tsc",
-    "start": "node ./dist/server.js"
+    "start": "node ./dist/server.js",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migration:generate": "yarn run typeorm -- migration:generate -d src/config/database.ts",
+    "migration:create": "yarn run typeorm -- migration:create",
+    "migration:run": "yarn run typeorm -- migration:run -d src/config/database.ts",
+    "migration:show": "yarn run typeorm -- migration:show -d src/config/database.ts",
+    "migration:revert": "yarn run typeorm -- migration:revert -d src/config/database.ts"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
