@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { User } from './User';
 import { Role } from './Role';
+import { InventoryItem } from './InventoryItem';
 
 @Entity('companies')
 export class Company {
@@ -19,4 +20,7 @@ export class Company {
 
   @OneToMany(() => Role, role => role.company)
   roles: Role[];
+
+  @OneToMany(() => InventoryItem, inventoryItem => inventoryItem.company)
+  inventoryItems: InventoryItem[];
 }

@@ -54,7 +54,9 @@ const seedDefaultPermissions = async () => {
     { name: 'VIEW_ROLE_PERMISSION', description: 'Can delete users' },
     { name: 'ASSIGN_ROLE_PERMISSION', description: 'Can delete users' },
     { name: 'DELETE_ROLE_PERMISSION', description: 'Can delete users' },
-    { name: 'MANAGE_INVENTORY', description: 'Can manage inventory items' },
+    { name: 'READ_INVENTORY', description: 'Can view inventory items' },
+    { name: 'CREATE_INVENTORY', description: 'Can create or update inventory items' },
+    { name: 'DELETE_INVENTORY', description: 'Can delete inventory items' },
     { name: 'PROCESS_CHECKOUT', description: 'Can process customer checkout' },
     { name: 'VIEW_REPORTS', description: 'Can view business reports' },
   ];
