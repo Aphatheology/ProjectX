@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import InventoryService from "../services/inventory.service";
 import { sendSuccess } from "../utils/apiResponse";
-import catchAsync from 'utils/catchAsync';
+import catchAsync from '../utils/catchAsync';
 
 const inventoryService = new InventoryService();
 

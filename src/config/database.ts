@@ -6,6 +6,7 @@ import { RolePermission } from '../entities/RolePermission';
 import { Company } from '../entities/Company';
 import config from './config';
 import logger from './logger';
+import { InventoryItem } from '../entities/InventoryItem';
 
 export const AppDataSource = new DataSource({
   type: config.db.type,
@@ -16,7 +17,7 @@ export const AppDataSource = new DataSource({
   database: config.db.name,
   synchronize: config.env !== 'production',
   logging: config.env !== 'production',
-  entities: [User, Role, Permission, RolePermission, Company],
+  entities: [User, Role, Permission, RolePermission, Company, InventoryItem],
   migrations: [],
   subscribers: [],
 });
@@ -51,9 +52,9 @@ const seedDefaultPermissions = async () => {
     { name: 'READ_USER', description: 'Can view user details' },
     { name: 'UPDATE_USER', description: 'Can update user details' },
     { name: 'DELETE_USER', description: 'Can delete users' },
-    { name: 'VIEW_ROLE_PERMISSION', description: 'Can delete users' },
-    { name: 'ASSIGN_ROLE_PERMISSION', description: 'Can delete users' },
-    { name: 'DELETE_ROLE_PERMISSION', description: 'Can delete users' },
+    { name: 'VIEW_ROLE_PERMISSION', description: 'Can view roles and permissions' },
+    { name: 'ASSIGN_ROLE_PERMISSION', description: 'Can assign permissions to roles' },
+    { name: 'DELETE_ROLE_PERMISSION', description: 'Can delete permissions from roles' },
     { name: 'READ_INVENTORY', description: 'Can view inventory items' },
     { name: 'CREATE_INVENTORY', description: 'Can create or update inventory items' },
     { name: 'DELETE_INVENTORY', description: 'Can delete inventory items' },
