@@ -21,9 +21,6 @@ export class Role {
   @JoinColumn({ name: 'company_id' })
   company: Company;
 
-  @OneToMany(() => User, user => user.role)
-  users: User[];
-
-  @OneToMany(() => RolePermission, rolePermission => rolePermission.role)
+  @OneToMany(() => RolePermission, rp => rp.role)
   rolePermissions: RolePermission[];
 }

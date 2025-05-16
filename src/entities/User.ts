@@ -23,7 +23,7 @@ export class User {
   @Column({ name: 'role_id', nullable: true })
   roleId: string;
 
-  @ManyToOne(() => Role, role => role.users, { nullable: true })
+  @ManyToOne(() => Role, { nullable: true })
   @JoinColumn({ name: 'role_id' })
   role: Role;
 

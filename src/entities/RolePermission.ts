@@ -13,11 +13,11 @@ export class RolePermission {
   @Column({ name: 'permission_id' })
   permissionId: string;
 
-  @ManyToOne(() => Role, role => role.rolePermissions)
+  @ManyToOne(() => Role)
   @JoinColumn({ name: 'role_id' })
   role: Role;
 
-  @ManyToOne(() => Permission, permission => permission.rolePermissions)
+  @ManyToOne(() => Permission)
   @JoinColumn({ name: 'permission_id' })
   permission: Permission;
 }
